@@ -90,6 +90,25 @@ namespace DTValidator {
 				validatedObjects.Add(obj);
 			}
 
+			// Skip user defined ignored asset paths:
+			var ignoredAssetPaths = ValidatorIgnoredAssetPathProvider.GetIgnoredAssetPaths();
+			if (ignoredAssetPaths.Count > 0)
+			{
+				UnityEngine.Object unityContextObject = contextObject as UnityEngine.Object;
+				if (unityContextObject != null)
+				{
+					string assetPath = AssetDatabase.GetAssetPath(unityContextObject);
+					if (!string.IsNullOrEmpty(assetPath))
+					{
+						bool ignored = ignoredAssetPaths
+							.Select(ignoredAssetPath => ignoredAssetPath.Path)
+							.Where(path => assetPath.StartsWith(path))
+							.Any();
+						if (ignored) return;
+					}
+				}
+			}
+
 			Type objectType = obj.GetType();
 
 			var whitelistedNamespaces = ValidatorWhitelistedNamespaceProvider.GetWhitelistedNamespaces();
