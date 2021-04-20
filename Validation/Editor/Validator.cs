@@ -117,7 +117,11 @@ namespace DTValidator {
 				}
 
 				if (!whitelistedNamespaces.Any(whitelistedNamespace => objectType.Namespace.Contains(whitelistedNamespace.Namespace))) {
-					return true;
+					// It is not allowed to skip basic UnityEngine objects, such as GameObject, because the validation
+					// always starts with one of those.
+					if (objectType.Namespace != typeof(GameObject).Namespace) {
+						return true;
+					}
 				}
 			} else {
 				if (!string.IsNullOrEmpty(objectType.Namespace)) {
@@ -129,7 +133,16 @@ namespace DTValidator {
 						}
 
 						if (objectType.Namespace.Contains(validatorIgnoredNamespace.Namespace)) {
-							return true;
+							// It is not allowed to skip basic UnityEngine objects, such as GameObject, because the
+							// validation always starts with one of those.
+							if (objectType.Namespace == typeof(GameObject).Namespace)
+							{
+								Debug.LogWarning($"Bad state - Cannot ignore namespace '{typeof(GameObject).Namespace}'");
+								continue;
+							} else
+							{
+								return true;
+							}
 						}
 					}
 				}
