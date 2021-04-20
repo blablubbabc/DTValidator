@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DTValidator.Internal {
@@ -9,7 +10,8 @@ namespace DTValidator.Internal {
 	public static class ValidatorWhitelistedNamespaceProvider {
 		public static IList<ValidatorWhitelistedNamespace> GetWhitelistedNamespaces() {
 			if (currentProvider_ == null) {
-				return AssetDatabaseUtil.AllAssetsOfType<ValidatorWhitelistedNamespace>();
+				return AssetDatabaseUtil.AllAssetsOfType<ValidatorWhitelistedNamespace>()
+					.Where(config => config.Enabled).ToList();
 			}
 
 			return currentProvider_.Invoke();

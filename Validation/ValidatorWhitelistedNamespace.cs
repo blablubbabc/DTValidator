@@ -9,6 +9,7 @@ namespace DTValidator {
 	// If any ValidatorWhitelistedNamespace exists in the project - validator will use whitelisting instead of blacklisting
 	[CreateAssetMenu(fileName = "ValidatorWhitelistedNamespace", menuName = "DTValidator/ValidatorWhitelistedNamespace")]
 	public class ValidatorWhitelistedNamespace : ScriptableObject {
+		public bool Enabled = true;
 		public string Namespace;
 	}
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DTValidator.Internal {
@@ -9,7 +10,8 @@ namespace DTValidator.Internal {
 	public static class ValidatorIgnoredNamespaceProvider {
 		public static IList<ValidatorIgnoredNamespace> GetIgnoredNamespaces() {
 			if (currentProvider_ == null) {
-				return AssetDatabaseUtil.AllAssetsOfType<ValidatorIgnoredNamespace>();
+				return AssetDatabaseUtil.AllAssetsOfType<ValidatorIgnoredNamespace>()
+					.Where(config => config.Enabled).ToList();
 			}
 
 			return currentProvider_.Invoke();
