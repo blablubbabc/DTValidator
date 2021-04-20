@@ -116,10 +116,8 @@ namespace DTValidator {
 					return true;
 				}
 
-				foreach (var whitelistedNamespace in whitelistedNamespaces) {
-					if (!objectType.Namespace.Contains(whitelistedNamespace.Namespace)) {
-						return true;
-					}
+				if (!whitelistedNamespaces.Any(whitelistedNamespace => objectType.Namespace.Contains(whitelistedNamespace.Namespace))) {
+					return true;
 				}
 			} else {
 				if (!string.IsNullOrEmpty(objectType.Namespace)) {
