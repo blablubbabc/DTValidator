@@ -45,13 +45,15 @@ namespace DTValidator {
 		};
 
 		private static void ValidateGameObjectInternal(GameObject gameObject, object contextObject, bool recursive, ref List<IValidationError> validationErrors, HashSet<object> validatedObjects = null) {
-			Queue<GameObject> queue = new Queue<GameObject>();
-			queue.Enqueue(gameObject);
-
 			if (recursive) {
 				validatedObjects = validatedObjects ?? new HashSet<object>();
 				validatedObjects.Add(gameObject);
 			}
+
+			if (IsIgnored(gameObject, contextObject)) return;
+
+			Queue<GameObject> queue = new Queue<GameObject>();
+			queue.Enqueue(gameObject);
 
 			while (queue.Count > 0) {
 				GameObject current = queue.Dequeue();
@@ -77,18 +79,9 @@ namespace DTValidator {
 			}
 		}
 
-		private static void ValidateInternal(object obj, object contextObject, bool recursive, ref List<IValidationError> validationErrors, HashSet<object> validatedObjects = null) {
-			if (obj == null) {
-				return;
-			}
-
-			if (validatedObjects != null) {
-				if (validatedObjects.Contains(obj)) {
-					return;
-				}
-
-				validatedObjects.Add(obj);
-			}
+		private static bool IsIgnored(object obj, object contextObject)
+		{
+			if (obj == null) return true;
 
 			// Skip user defined ignored asset paths:
 			var ignoredAssetPaths = ValidatorIgnoredAssetPathProvider.GetIgnoredAssetPaths();
@@ -100,11 +93,10 @@ namespace DTValidator {
 					string assetPath = AssetDatabase.GetAssetPath(unityContextObject);
 					if (!string.IsNullOrEmpty(assetPath))
 					{
-						bool ignored = ignoredAssetPaths
-							.Select(ignoredAssetPath => ignoredAssetPath.Path)
-							.Where(path => assetPath.StartsWith(path))
-							.Any();
-						if (ignored) return;
+						if (ignoredAssetPaths.Any(ignoredAssetPath => assetPath.StartsWith(ignoredAssetPath.Path)))
+						{
+							return true;
+						}
 					}
 				}
 			}
@@ -121,12 +113,12 @@ namespace DTValidator {
 
 				if (string.IsNullOrEmpty(objectType.Namespace)) {
 					// No namespace means no validation in whitelist format
-					return;
+					return true;
 				}
 
 				foreach (var whitelistedNamespace in whitelistedNamespaces) {
 					if (!objectType.Namespace.Contains(whitelistedNamespace.Namespace)) {
-						return;
+						return true;
 					}
 				}
 			} else {
@@ -139,12 +131,31 @@ namespace DTValidator {
 						}
 
 						if (objectType.Namespace.Contains(validatorIgnoredNamespace.Namespace)) {
-							return;
+							return true;
 						}
 					}
 				}
 			}
 
+			return false;
+		}
+
+		private static void ValidateInternal(object obj, object contextObject, bool recursive, ref List<IValidationError> validationErrors, HashSet<object> validatedObjects = null) {
+			if (obj == null) {
+				return;
+			}
+
+			if (validatedObjects != null) {
+				if (validatedObjects.Contains(obj)) {
+					return;
+				}
+
+				validatedObjects.Add(obj);
+			}
+
+			if (IsIgnored(obj, contextObject)) return;
+
+			Type objectType = obj.GetType();
 			foreach (FieldInfo fieldInfo in TypeUtil.GetInspectorFields(objectType)
 			.Where(f => typeof(UnityEventBase).IsAssignableFrom(f.FieldType))
 			.Where(f => !Attribute.IsDefined(f, typeof(OptionalAttribute)) && !Attribute.IsDefined(f, typeof(HideInInspector)))) {
