@@ -13,11 +13,13 @@ namespace DTValidator.Internal {
 	public static class MissingMonoScriptTests {
 		[Test]
 		public static void RenamedComponentMissingMonoScript_ReturnsErrors() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			GameObject renamedComponentPrefab = Resources.Load<GameObject>("DTValidatorTests/TestRenamedComponentPrefab");
 
 			IList<IValidationError> errors = Validator.Validate(renamedComponentPrefab);
 			Assert.That(errors, Is.Not.Null);
 			Assert.That(errors.Count, Is.EqualTo(1));
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 	}
 }

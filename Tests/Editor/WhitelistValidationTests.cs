@@ -28,11 +28,13 @@ namespace DTValidator.Internal {
 
 		[Test]
 		public static void BrokenMeshFilterPrefab_ReturnsErrors() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			GameObject brokenMeshFilterPrefab = Resources.Load<GameObject>("DTValidatorTests/BrokenMeshFilterPrefab");
 
 			IList<IValidationError> errors = Validator.Validate(brokenMeshFilterPrefab, recursive: true);
 			Assert.That(errors, Is.Not.Null);
 			Assert.That(errors.Count, Is.EqualTo(1));
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 	}
 }

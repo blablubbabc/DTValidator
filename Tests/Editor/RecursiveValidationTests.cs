@@ -21,6 +21,7 @@ namespace DTValidator.Internal {
 
 		[Test]
 		public static void RecursivePrefabWithMissingOutlet_ReturnsErrors() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			GameObject gameObject = new GameObject();
 
 			var outletComponent = gameObject.AddComponent<OutletComponent>();
@@ -31,10 +32,12 @@ namespace DTValidator.Internal {
 			IList<IValidationError> errors = Validator.Validate(gameObject, recursive: true);
 			Assert.That(errors, Is.Not.Null);
 			Assert.That(errors.Count, Is.EqualTo(1));
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 
 		[Test]
 		public static void RecursivePrefabValidationError_ReturnsExpected() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			GameObject gameObject = new GameObject();
 
 			var outletComponent = gameObject.AddComponent<OutletComponent>();
@@ -51,6 +54,7 @@ namespace DTValidator.Internal {
 			Assert.That(error.ObjectType, Is.EqualTo(typeof(TestOutletComponent)));
 			Assert.That(error.MemberInfo, Is.EqualTo(typeof(TestOutletComponent).GetField("Outlet")));
 			Assert.That(error.ContextObject, Is.EqualTo(missingOutletPrefab));
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 
 		[Test]

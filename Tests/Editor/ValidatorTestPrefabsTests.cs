@@ -16,11 +16,13 @@ namespace DTValidator.Internal {
 	public static class ValidatorTestPrefabsTests {
 		[Test]
 		public static void ValidatorTestBrokenPrefabs_All_ReturnErrors() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			GameObject[] brokenPrefabs = Resources.LoadAll<GameObject>("DTValidatorTestBrokenPrefabs");
 			foreach (GameObject prefab in brokenPrefabs) {
 				IList<IValidationError> errors = Validator.Validate(prefab);
 				Assert.That(errors, Is.Not.Null, string.Format("Prefab named: '{0}' does not return any validation errors!", prefab.name));
 			}
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 
 		[Test]

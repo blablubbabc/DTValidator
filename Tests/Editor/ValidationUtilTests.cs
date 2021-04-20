@@ -16,18 +16,22 @@ namespace DTValidator.Internal {
 	public static class ValidationUtilTests {
 		[Test]
 		public static void ValidateAllGameObjectsInScenes_WorksAsExpected() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			Scene scene = EditorSceneManager.OpenScene(GetPathToScene("TestMissingOutletsScene"));
 			IList<IValidationError> errors = ValidationUtil.ValidateAllGameObjectsInScenes(new Scene[] { scene });
 			Assert.That(errors, Is.Not.Null);
 			Assert.That(errors.Count, Is.GreaterThan(1));
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 
 		[Test]
 		public static void ValidateAllGameObjectsInScenes_EarlyExit_WorksAsExpected() {
+			ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 			Scene scene = EditorSceneManager.OpenScene(GetPathToScene("TestMissingOutletsScene"));
 			IList<IValidationError> errors = ValidationUtil.ValidateAllGameObjectsInScenes(new Scene[] { scene }, earlyExitOnError: true);
 			Assert.That(errors, Is.Not.Null);
 			Assert.That(errors.Count, Is.EqualTo(1));
+			ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
 		}
 
 		[Test]

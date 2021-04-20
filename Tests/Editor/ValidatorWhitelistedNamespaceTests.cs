@@ -39,6 +39,7 @@ namespace DTValidator.Internal {
             ValidatorWhitelistedNamespaceProvider.SetCurrentProvider(WhitelistedOutletComponentNamespaceProvider);
             ValidatorIgnoredNamespaceProvider.SetCurrentProvider(() => new ValidatorIgnoredNamespace[0]);
             ValidatorBlacklistedClassProvider.SetCurrentProvider(() => new ValidatorBlacklistedClass[0]);
+            ValidatorIgnoredAssetPathProvider.SetCurrentProvider(() => new ValidatorIgnoredAssetPath[0]);
 
             GameObject gameObject = new GameObject();
 
@@ -51,6 +52,7 @@ namespace DTValidator.Internal {
             ValidatorWhitelistedNamespaceProvider.ClearCurrentProvider();
             ValidatorIgnoredNamespaceProvider.ClearCurrentProvider();
             ValidatorBlacklistedClassProvider.ClearCurrentProvider();
+            ValidatorIgnoredAssetPathProvider.ClearCurrentProvider();
         }
 
         [Test]
